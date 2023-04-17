@@ -16,13 +16,23 @@ class SimaiTransformer(Transformer):
         pass
 
     def des(self, n):
-        pass
+        if len(n) == 1:
+            n = n[0]
+            return {"type": "des", "value": n.rstrip()}
+        elif len(n) == 2:
+            num, des = n
+            return {"type": "des", "value": (int(num), des.rstrip())}
 
     def freemsg(self, n):
         pass
 
     def first(self, n):
-        pass
+        if len(n) == 1:
+            n = n[0]
+            return {"type": "first", "value": n.rstrip()}
+        elif len(n) == 2:
+            num, first = n
+            return {"type": "first", "value": (int(num), first)}
 
     def pvstart(self, n):
         pass
@@ -31,7 +41,8 @@ class SimaiTransformer(Transformer):
         pass
 
     def wholebpm(self, n):
-        pass
+        n = n[0]
+        return {"type": "wholebpm", "value": n.rstrip()}
 
     def level(self, n):
         num, level = n
