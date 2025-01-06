@@ -1,3 +1,13 @@
+用法：
+
+pip install pyinstaller
+
+运行build.py编译为dict/maiconverter.exe
+
+cmd到dict，指令maiconverter simaitoma2 "path_to_maidata"
+
+maidata仅保留inote信息，其它全部删掉
+
 # MaiConverter
 A Python program for parsing and converting Maimai charts. Made up of two parts: 
 * An importable package for parsing, creating, exporting, and converting SDT, Ma2, and 3Simai charts. And
