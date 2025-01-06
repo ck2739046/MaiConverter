@@ -1,1 +1,0 @@
-pyinstaller --clean --add-data "./maiconverter/simai/simai.lark;./maiconverter/simai" --add-data "./maiconverter/simai/simai_fragment.lark;./maiconverter/simai" --onefile .\maiconverter\test.py --name maiconverter
