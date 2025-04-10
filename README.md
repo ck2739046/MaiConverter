@@ -1,12 +1,12 @@
 用法：
 
 pip install pyinstaller
-
 运行build.py编译为dict/maiconverter.exe
 
 cmd到dict，指令maiconverter simaitoma2 "path_to_maidata"
+或者直接将txt拖入exe
 
-maidata仅保留inote信息，其它全部删掉
+maidata其它信息全部删掉 (包括&inote=), 只保留(bpm)
 
 # MaiConverter
 A Python program for parsing and converting Maimai charts. Made up of two parts: 

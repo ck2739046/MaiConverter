@@ -338,6 +338,17 @@ def parse_arg():
 
 
 def main():
+
+    direct_drag = False
+    # Check if a txt was dropped onto the exe
+    if (len(sys.argv) == 2 and
+        os.path.isfile(sys.argv[1]) and
+        sys.argv[1].lower().endswith('.txt')):
+
+        print(f"Processing file: {sys.argv[1]}")
+        direct_drag = True
+        sys.argv = [sys.argv[0], "simaitoma2", sys.argv[1], "-o", os.path.dirname(sys.argv[1])]
+
     args = parse_arg()
     print(f"MaiConverter {maiconverter.__version__} by donmai")
 
@@ -360,7 +371,10 @@ def main():
         else:
             chart_convert(args, output_dir)
     finally:
-        print(
-            "Finished. Join MaiMai Tea Discord server for more info and tools about MaiMai modding!"
-        )
-        print("https://discord.gg/WxEMM9dnwR")
+        # print("Finished. Join MaiMai Tea Discord server for more info and tools about MaiMai modding!")
+        # print("https://discord.gg/WxEMM9dnwR")
+
+        print("finish")
+        # avoid close window immediately
+        if direct_drag:
+            input("Press Enter to exit...")
