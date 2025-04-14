@@ -370,6 +370,15 @@ def main():
             crypto(args, output_dir)
         else:
             chart_convert(args, output_dir)
+    except Exception as e:
+        # Print detailed error information when in direct drag mode
+        if direct_drag:
+            print("\nDetailed error information:")
+            print("-" * 50)
+            traceback.print_exc()
+            print("-" * 50)
+        # Re-raise the exception to maintain normal error handling behavior
+        raise
     finally:
         # print("Finished. Join MaiMai Tea Discord server for more info and tools about MaiMai modding!")
         # print("https://discord.gg/WxEMM9dnwR")
