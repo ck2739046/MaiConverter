@@ -13,7 +13,8 @@ def build():
         '--onefile',
         './maiconverter/test.py',
         '--name=maiconverter',
-        '--version-file=./version.txt'
+        '--version-file=./version.txt',
+        '--icon=./favicon.ico',
     ]
     
     # Add data files to arguments
