@@ -1,6 +1,5 @@
 output
 *.sdt
-*.txt
 build
 .vscode
 .idea

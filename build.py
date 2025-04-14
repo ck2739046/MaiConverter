@@ -12,7 +12,8 @@ def build():
         '--clean',
         '--onefile',
         './maiconverter/test.py',
-        '--name=maiconverter'
+        '--name=maiconverter',
+        '--version-file=./version.txt'
     ]
     
     # Add data files to arguments
