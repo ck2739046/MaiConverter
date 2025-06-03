@@ -17,6 +17,7 @@ from .simainote import (
 from .simai_parser import parse_fragment
 
 ABORT = None
+ORIGINAL_TEXT = None
 
 
 def _lcm(a: int, b: int) -> int:
@@ -337,13 +338,22 @@ def convert_to_fragment(
     return fragment
 
 
-def _parse_init(event):
-    global ABORT
+def _parse_init(event, original_text=None):
+    global ABORT, ORIGINAL_TEXT
     ABORT = event
+    ORIGINAL_TEXT = original_text
 
 
-def _parse_helper(fragment: str) -> List:
-    global ABORT
+def _parse_helper(fragment_data) -> List:
+    global ABORT, ORIGINAL_TEXT
+    
+    if isinstance(fragment_data, str):
+        # Backward compatibility
+        fragment = fragment_data
+        fragment_index = -1
+    else:
+        fragment, fragment_index = fragment_data
+    
     # Return an empty list when ABORT is set or the fragments is empty or "E"
     if ABORT.is_set() or len(fragment) == 0 or fragment == "E":
         return []
@@ -353,12 +363,35 @@ def _parse_helper(fragment: str) -> List:
     except Exception as e:
         # Abort all jobs
         ABORT.set()
-        raise RuntimeError(f"Error parsing fragment {fragment}") from e
+          # Generate context information
+        context_info = f"Error parsing fragment {fragment}"
+        if fragment_index >= 0 and ORIGINAL_TEXT:
+            # Find the position of this fragment in the original text
+            current_pos = 0
+            for i in range(fragment_index):
+                if i < len(ORIGINAL_TEXT.split(",")):
+                    current_pos += len(ORIGINAL_TEXT.split(",")[i]) + 1  # +1 for comma
+            
+            # Extract context around the error position (up to 40 characters before and after)
+            context_start = max(0, current_pos - 20)
+            context_end = min(len(ORIGINAL_TEXT), current_pos + len(fragment) + 20)
+            context = ORIGINAL_TEXT[context_start:context_end]
+            
+            context_info += f"\nDEBUG: Error parsing fragment at index {fragment_index}:"
+            context_info += f"\nFragment content: '{fragment}'"
+            context_info += f"\nFragment length: {len(fragment)}"
+            context_info += f"\n----------------\n"
+            context_info += f"{context}"
+            context_info += f"\n----------------"
+            context_info += f"\nPosition in original text: {current_pos}-{current_pos + len(fragment)}"
+            
+        context_info += f"\nOriginal error: {str(e)}"
+        raise RuntimeError(context_info) from e
 
     return parsed
 
 
-def parallel_parse_fragments(fragments: List[str]) -> list:
+def parallel_parse_fragments(fragments: List[str], original_text: str = None) -> list:
     _abort = Event()
 
     cpu_count = os.cpu_count()
@@ -369,11 +402,14 @@ def parallel_parse_fragments(fragments: List[str]) -> list:
 
     # Stop jobs when abort is set
     def fragment_iter():
-        for fragment in fragments:
+        for i, fragment in enumerate(fragments):
             if not _abort.is_set():
-                yield fragment
+                if original_text:
+                    yield (fragment, i)
+                else:
+                    yield fragment
 
-    with Pool(processes=cpu_count, initializer=_parse_init, initargs=(_abort,)) as pool:
+    with Pool(processes=cpu_count, initializer=_parse_init, initargs=(_abort, original_text)) as pool:
         result = pool.map(_parse_helper, fragment_iter(), chunksize)
 
     return result

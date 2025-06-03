@@ -50,7 +50,7 @@ class SimaiChart:
         simai_chart = cls()
         chart_text = "".join(chart_text.split())
         try:
-            events_list = parallel_parse_fragments(chart_text.split(","))
+            events_list = parallel_parse_fragments(chart_text.split(","), chart_text)
         except:
             print("ERROR")
             raise
