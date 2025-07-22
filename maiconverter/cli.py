@@ -346,6 +346,26 @@ def main():
         sys.argv[1].lower().endswith('.txt')):
 
         print(f"Processing file: {sys.argv[1]}")
+
+        # 如果第一个字符不是'('，尝试删除隐藏字符
+        with open(sys.argv[1], 'r', encoding='utf-8') as f:
+            first_char = f.read(1)
+            if first_char != '(':
+                print("The file does not start with '('. ")
+                # 打印这个字符
+                print(f"First character: '{first_char}'")
+                # 获取第二个字符
+                second_char = f.read(1)
+                # 如果第二个字符是'('，则删除第一个字符
+                if second_char == '(':
+                    print("The second character is '('. Removing the first character.")
+                    with open(sys.argv[1], 'r+', encoding='utf-8') as f:
+                        content = f.read()
+                        f.seek(0)
+                        f.write(content[1:])
+                else:
+                    raise ValueError("The file does not start with '('. Cannot process.")
+
         direct_drag = True
         sys.argv = [sys.argv[0], "simaitoma2", sys.argv[1], "-o", os.path.dirname(sys.argv[1])]
 
