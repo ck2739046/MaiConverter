@@ -377,13 +377,12 @@ def _parse_helper(fragment_data) -> List:
             context_end = min(len(ORIGINAL_TEXT), current_pos + len(fragment) + 20)
             context = ORIGINAL_TEXT[context_start:context_end]
             
-            context_info += f"\nDEBUG: Error parsing fragment at index {fragment_index}:"
-            context_info += f"\nFragment content: '{fragment}'"
-            context_info += f"\nFragment length: {len(fragment)}"
-            context_info += f"\n----------------\n"
-            context_info += f"{context}"
+            context_info += f"\nDEBUG: Error parsing fragment at index {fragment_index}:\n"
             context_info += f"\n----------------"
-            context_info += f"\nPosition in original text: {current_pos}-{current_pos + len(fragment)}"
+            context_info += f"\n{context}"
+            context_info += f"\n{' ' * min(20, current_pos)}{'^' * len(fragment)}"
+            context_info += f"\n----------------"
+            context_info += f"\n\nPosition in original text: {current_pos}-{current_pos + len(fragment)}"
             
         context_info += f"\nOriginal error: {str(e)}"
         raise RuntimeError(context_info) from e
