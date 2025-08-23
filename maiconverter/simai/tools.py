@@ -363,7 +363,7 @@ def _parse_helper(fragment_data) -> List:
     except Exception as e:
         # Abort all jobs
         ABORT.set()
-          # Generate context information
+        # Generate context information
         context_info = f"Error parsing fragment {fragment}"
         if fragment_index >= 0 and ORIGINAL_TEXT:
             # Find the position of this fragment in the original text

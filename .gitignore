@@ -35,5 +35,4 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-dist/*.ma2
-dist/*.txt
+dist/

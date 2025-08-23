@@ -248,7 +248,7 @@ def pattern_to_int(slide_note: SlideNote) -> int:
     if dict_result is not None:
         return dict_result
     elif pattern == "^":
-        is_cw = slide_is_cw(slide_note.position, slide_note.end_position)
+        is_cw = slide_is_cw(slide_note.position, slide_note.end_position, pattern)
         if is_cw:
             return 3
         else:
@@ -269,7 +269,7 @@ def pattern_to_int(slide_note: SlideNote) -> int:
         if slide_note.reflect_position is None:
             raise ValueError("Slide pattern 'V' has no reflect position defined")
 
-        is_cw = slide_is_cw(slide_note.position, slide_note.reflect_position)
+        is_cw = slide_is_cw(slide_note.position, slide_note.reflect_position, pattern)
         if is_cw:
             return 12
         else:

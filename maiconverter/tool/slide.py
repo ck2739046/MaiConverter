@@ -20,7 +20,7 @@ def slide_distance(start: int, end: int, is_cw: bool = True) -> int:
     return (start - end) % 8
 
 
-def slide_is_cw(start_position: int, end_position: int) -> bool:
+def slide_is_cw(start_position: int, end_position: int, pattern: str) -> bool:
     """Returns True when the shortest distance between the start and end position is achieved with
     a clockwise rotation. Returns False otherwise.
 
@@ -37,7 +37,7 @@ def slide_is_cw(start_position: int, end_position: int) -> bool:
     diff = abs(end_position - start_position)
     other_diff = abs(8 - diff)
     if diff == 4:
-        raise ValueError("Can't choose direction for a 180 degree angle.")
+        raise ValueError(f"Can't choose direction for a 180 degree angle. (start: {start_position}, end: {end_position}, pattern: {pattern})")
 
     if (end_position > start_position and diff > other_diff) or (
         end_position < start_position and diff < other_diff
