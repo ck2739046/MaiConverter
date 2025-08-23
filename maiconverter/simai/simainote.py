@@ -240,6 +240,55 @@ def pattern_from_int(
     raise ValueError(f"Unknown pattern: {pattern}")
 
 
+def is_v_slide_180_degree(slide_note: SlideNote) -> bool:
+    if slide_note.pattern != "V" or slide_note.reflect_position is None:
+        return False
+    
+    diff = abs(slide_note.reflect_position - slide_note.position)
+    return diff == 4
+
+
+def convert_v_slide_to_connected_slides(slide_note: SlideNote) -> Tuple[SlideNote, SlideNote]:
+    """将V型180度角滑条转换为两个连接的直线滑条"""
+    if not is_v_slide_180_degree(slide_note):
+        raise ValueError("Only V slides with 180 degree angles can be converted")
+    
+    # 第一个滑条：从起始位置到反射位置
+    first_slide = SlideNote(
+        measure=slide_note.measure,
+        start_position=slide_note.position,
+        end_position=slide_note.reflect_position,
+        duration=slide_note.duration / 2,  # 平分时长
+        pattern="-",  # 直线滑条
+        delay=slide_note.delay,
+        is_break=slide_note.is_break,
+        is_ex=slide_note.is_ex,
+        is_connect=slide_note.is_connect  # 原始连接状态
+    )
+    
+    # 第二个滑条：从反射位置到结束位置
+    # 时间计算：起始时间 + delay + 第一个滑条的duration
+    second_slide = SlideNote(
+        measure=slide_note.measure + slide_note.delay + slide_note.duration / 2,
+        start_position=slide_note.reflect_position,
+        end_position=slide_note.end_position,
+        duration=slide_note.duration / 2,  # 平分时长
+        pattern="-",  # 直线滑条
+        delay=0,  # 连接滑条没有延迟
+        is_break=slide_note.is_break,
+        is_ex=slide_note.is_ex,
+        is_connect=True  # 第二个滑条总是连接滑条
+    )
+    
+    return first_slide, second_slide
+
+
+class VSlide180DegreeException(Exception):
+    def __init__(self, slide_note: SlideNote):
+        self.slide_note = slide_note
+        super().__init__(f"V slide with 180 degree angle should be converted to connected straight slides")
+
+
 def pattern_to_int(slide_note: SlideNote) -> int:
     pattern = slide_note.pattern
     top_list = [0, 1, 6, 7]
@@ -268,7 +317,11 @@ def pattern_to_int(slide_note: SlideNote) -> int:
     elif pattern == "V":
         if slide_note.reflect_position is None:
             raise ValueError("Slide pattern 'V' has no reflect position defined")
-
+        
+        # 检查是否为180度角情况
+        if is_v_slide_180_degree(slide_note):
+            raise VSlide180DegreeException(slide_note)
+        
         is_cw = slide_is_cw(slide_note.position, slide_note.reflect_position, pattern)
         if is_cw:
             return 12

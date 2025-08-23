@@ -15,6 +15,8 @@ from ..simai import (
     SlideNote,
     TouchHoldNote,
     TouchTapNote,
+    VSlide180DegreeException,
+    convert_v_slide_to_connected_slides,
 )
 from ..event import SimaiNote, NoteType
 
@@ -69,18 +71,50 @@ def convert_notes(ma2: MaiMa2, simai_notes: List[SimaiNote]) -> None:
         elif isinstance(simai_note, SlideNote):
             # Ma2 slide durations does not include the delay
             # like in simai
-            pattern = pattern_to_int(simai_note)
-            ma2.add_slide(
-                measure=simai_note.measure,
-                start_position=simai_note.position,
-                end_position=simai_note.end_position,
-                duration=simai_note.duration,
-                pattern=pattern,
-                delay=simai_note.delay,
-                is_break=simai_note.is_break,
-                is_ex=simai_note.is_ex,
-                is_connect=simai_note.is_connect
-            )
+            try:
+                pattern = pattern_to_int(simai_note)
+                ma2.add_slide(
+                    measure=simai_note.measure,
+                    start_position=simai_note.position,
+                    end_position=simai_note.end_position,
+                    duration=simai_note.duration,
+                    pattern=pattern,
+                    delay=simai_note.delay,
+                    is_break=simai_note.is_break,
+                    is_ex=simai_note.is_ex,
+                    is_connect=simai_note.is_connect
+                )
+            except VSlide180DegreeException:
+                # V型滑条180度角情况，分解为两个连接的直线滑条
+                first_slide, second_slide = convert_v_slide_to_connected_slides(simai_note)
+                
+                # 添加第一个滑条
+                pattern1 = pattern_to_int(first_slide)
+                ma2.add_slide(
+                    measure=first_slide.measure,
+                    start_position=first_slide.position,
+                    end_position=first_slide.end_position,
+                    duration=first_slide.duration,
+                    pattern=pattern1,
+                    delay=first_slide.delay,
+                    is_break=first_slide.is_break,
+                    is_ex=first_slide.is_ex,
+                    is_connect=first_slide.is_connect
+                )
+                
+                # 添加第二个滑条
+                pattern2 = pattern_to_int(second_slide)
+                ma2.add_slide(
+                    measure=second_slide.measure,
+                    start_position=second_slide.position,
+                    end_position=second_slide.end_position,
+                    duration=second_slide.duration,
+                    pattern=pattern2,
+                    delay=second_slide.delay,
+                    is_break=second_slide.is_break,
+                    is_ex=second_slide.is_ex,
+                    is_connect=second_slide.is_connect
+                )
         elif isinstance(simai_note, TouchTapNote):
             ma2.add_touch_tap(
                 measure=simai_note.measure,
