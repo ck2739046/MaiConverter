@@ -268,20 +268,11 @@ def pattern_to_int(slide_note: SlideNote) -> int:
     elif pattern == "V":
         if slide_note.reflect_position is None:
             raise ValueError("Slide pattern 'V' has no reflect position defined")
-        
-        try:
-            is_cw = slide_is_cw(slide_note.position, slide_note.reflect_position, pattern)
-            if is_cw:
-                return 12
-            else:
-                return 11
-        except ValueError:
-            # V pattern special case handle
-            # if 180 degree angle, check the overall path from start to end 
-            distance_cw = slide_distance(slide_note.position, slide_note.end_position, is_cw=True)
-            if 0 < distance_cw < 5:
-                return 11
-            else:
-                return 12
+
+        is_cw = slide_is_cw(slide_note.position, slide_note.reflect_position, pattern)
+        if is_cw:
+            return 12
+        else:
+            return 11
     else:
         raise ValueError(f"Unknown slide pattern {pattern}")
