@@ -240,18 +240,21 @@ def pattern_from_int(
     raise ValueError(f"Unknown pattern: {pattern}")
 
 
-def is_v_slide_180_degree(slide_note: SlideNote) -> bool:
+def is_v_slide_illegal(slide_note: SlideNote) -> bool:
     if slide_note.pattern != "V" or slide_note.reflect_position is None:
         return False
     
     diff = abs(slide_note.reflect_position - slide_note.position)
-    return diff == 4
+    if diff != 2 and diff != 6:
+        return True
+
+    return False
 
 
 def convert_v_slide_to_connected_slides(slide_note: SlideNote) -> Tuple[SlideNote, SlideNote]:
-    """将V型180度角滑条转换为两个连接的直线滑条"""
-    if not is_v_slide_180_degree(slide_note):
-        raise ValueError("Only V slides with 180 degree angles can be converted")
+    """将非法V型滑条转换为两个连接的直线滑条"""
+    if not is_v_slide_illegal(slide_note):
+        raise ValueError("Only illegal V slides can be converted")
     
     # 第一个滑条：从起始位置到反射位置
     first_slide = SlideNote(
@@ -283,10 +286,10 @@ def convert_v_slide_to_connected_slides(slide_note: SlideNote) -> Tuple[SlideNot
     return first_slide, second_slide
 
 
-class VSlide180DegreeException(Exception):
+class illegal_v_slide_exception(Exception):
     def __init__(self, slide_note: SlideNote):
         self.slide_note = slide_note
-        super().__init__(f"V slide with 180 degree angle should be converted to connected straight slides")
+        super().__init__(f"illegal V slide detected: {slide_note.position+1}-{slide_note.reflect_position+1}-{slide_note.end_position+1}")
 
 
 def pattern_to_int(slide_note: SlideNote) -> int:
@@ -318,10 +321,10 @@ def pattern_to_int(slide_note: SlideNote) -> int:
         if slide_note.reflect_position is None:
             raise ValueError("Slide pattern 'V' has no reflect position defined")
         
-        # 检查是否为180度角情况
-        if is_v_slide_180_degree(slide_note):
-            raise VSlide180DegreeException(slide_note)
-        
+        # 检查是否为非法V型滑条
+        if is_v_slide_illegal(slide_note):
+            raise illegal_v_slide_exception(slide_note)
+
         is_cw = slide_is_cw(slide_note.position, slide_note.reflect_position, pattern)
         if is_cw:
             return 12

@@ -38,6 +38,8 @@ def slide_is_cw(start_position: int, end_position: int, pattern: str) -> bool:
     other_diff = abs(8 - diff)
     if diff == 4:
         raise ValueError(f"Can't choose direction for a 180 degree angle. (start: {start_position+1}, end: {end_position+1}, pattern: {pattern})")
+    if pattern == "V" and diff != 2 and diff != 6:
+        raise ValueError(f"Illegal V slide note. (start: {start_position+1}, end: {end_position+1}, pattern: {pattern})")
 
     if (end_position > start_position and diff > other_diff) or (
         end_position < start_position and diff < other_diff

@@ -15,7 +15,7 @@ from ..simai import (
     SlideNote,
     TouchHoldNote,
     TouchTapNote,
-    VSlide180DegreeException,
+    illegal_v_slide_exception,
     convert_v_slide_to_connected_slides,
 )
 from ..event import SimaiNote, NoteType
@@ -84,8 +84,8 @@ def convert_notes(ma2: MaiMa2, simai_notes: List[SimaiNote]) -> None:
                     is_ex=simai_note.is_ex,
                     is_connect=simai_note.is_connect
                 )
-            except VSlide180DegreeException:
-                # V型滑条180度角情况，分解为两个连接的直线滑条
+            except illegal_v_slide_exception:
+                # 将非法V型滑条分解为两个连接的直线滑条
                 first_slide, second_slide = convert_v_slide_to_connected_slides(simai_note)
                 
                 # 添加第一个滑条
@@ -115,6 +115,9 @@ def convert_notes(ma2: MaiMa2, simai_notes: List[SimaiNote]) -> None:
                     is_ex=second_slide.is_ex,
                     is_connect=second_slide.is_connect
                 )
+                
+                print(f"Converted illegal V-slide {simai_note.position+1}-{simai_note.reflect_position+1}-{simai_note.end_position+1}")
+
         elif isinstance(simai_note, TouchTapNote):
             ma2.add_touch_tap(
                 measure=simai_note.measure,
