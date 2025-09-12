@@ -10,6 +10,9 @@ cmd到dict，指令maiconverter simaitoma2 "path_to_maidata"
 需要删除&inote_x=(xxx){x}...前面的所有内容 (包括&inote_x=),
 也就是说txt中只能有(xxx){x}...的内容
 
+如果是多谱面格式
+需要删除&des_x=...和&lv_x=...
+
 # MaiConverter
 A Python program for parsing and converting Maimai charts. Made up of two parts: 
 * An importable package for parsing, creating, exporting, and converting SDT, Ma2, and 3Simai charts. And

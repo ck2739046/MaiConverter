@@ -371,9 +371,9 @@ def main():
         with open(sys.argv[1], 'r', encoding='utf-8') as f:
             first_char = f.read(1)
             if first_char == '(':
-                sys.argv = [sys.argv[0], "simaitoma2", sys.argv[1], "-o", os.path.dirname(sys.argv[1]), "-d 0.0333"]
+                sys.argv = [sys.argv[0], "simaitoma2", sys.argv[1], "-o", os.path.dirname(sys.argv[1]), "-d 0.0333s"]
             else:
-                sys.argv = [sys.argv[0], "simaifiletoma2", sys.argv[1], "-o", os.path.dirname(sys.argv[1]), "-d 0.0333"]
+                sys.argv = [sys.argv[0], "simaifiletoma2", sys.argv[1], "-o", os.path.dirname(sys.argv[1]), "-d 0.0333s"]
 
 
     args = parse_arg()
